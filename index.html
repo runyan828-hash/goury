@@ -9,33 +9,33 @@
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100dvh;
             overflow: hidden; touch-action: none;
-            background: linear-gradient(135deg, #edaac1, #9ff6f6, #f1f695);
+            background: linear-gradient(180deg, #fff5f7 0%, #ffeef2 100%);
         }
         body {
             display: flex; flex-direction: column;
-            align-items: center; justify-content: space-between; /* 上下いっぱいに配置 */
+            align-items: center; justify-content: space-between;
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            /* 下部のナビゲーションバーとの重なりを防止 */
-            padding: 5px 10px calc(15px + env(safe-area-inset-bottom));
+            padding: 5px 10px calc(10px + env(safe-area-inset-bottom));
         }
 
-        h1 { font-size: 14px; color: #4A90E2; text-shadow: 1px 1px white; margin: 5px 0; flex-shrink: 0; }
+        h1 { font-size: 13px; color: #4A90E2; text-shadow: 1px 1px white; margin: 2px 0; flex-shrink: 0; }
 
         #main-app {
             display: flex; flex-direction: column; align-items: center;
             width: 100%; max-width: 450px; height: 100%;
         }
 
+        /* ゲーム画面とメッセージを一体化 */
         #unified-area {
             width: 100%; flex: 1; display: flex; flex-direction: column;
-            background: #fff; border: 4px solid #fff; border-radius: 15px;
+            background: #fff; border: 4px solid #fff; border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; min-height: 0;
         }
 
         #game-wrapper {
             position: relative; flex: 1; width: 100%;
             display: flex; justify-content: center; align-items: center;
-            background: #f0f0f0; min-height: 0;
+            background: #fdfdfd; min-height: 0;
         }
 
         canvas#game {
@@ -47,20 +47,18 @@
             gap: 10px; background: #fff; padding: 0 12px;
             border-top: 2px solid #f1f695; flex-shrink: 0;
         }
-        #msgImage { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
-        #message { font-size: 13px; font-weight: bold; color: #E91E63; line-height: 1.2; flex: 1; }
+        #msgImage { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
+        #message { font-size: 14px; font-weight: bold; color: #E91E63; line-height: 1.2; flex: 1; }
 
-        /* スマホ用操作ボタン: サイズを大きく、位置を最適化 */
+        /* 操作ボタン: 巨大化・押しやすく */
         #controls {
             width: 100%; display: none; grid-template-columns: repeat(5, 1fr);
-            gap: 8px; padding: 15px 0 0 0; flex-shrink: 0;
+            gap: 8px; padding: 10px 0 5px 0; flex-shrink: 0;
         }
         .btn-ctrl {
             background: #7dc9fc; color: white; border: none; border-radius: 12px;
-            padding: 22px 0; /* 高さをしっかり出して押しやすく */
-            font-size: 26px; font-weight: bold;
+            padding: 22px 0; font-size: 28px; font-weight: bold;
             box-shadow: 0 6px #5ba8d6; cursor: pointer; user-select: none;
-            touch-action: manipulation;
         }
         .btn-ctrl:active { transform: translateY(2px); box-shadow: 0 3px #5ba8d6; }
         #btn-rotate { background: #ff9e6d; box-shadow: 0 6px #e68a5c; }
@@ -77,7 +75,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 280px;
         }
         .btn-main {
-            width: 100%; padding: 12px; font-size: 18px; font-weight: bold; margin-top: 10px;
+            width: 100%; padding: 15px; font-size: 20px; font-weight: bold; margin-top: 10px;
             background: #ff6ec7; color: white; border: none; border-radius: 50px; cursor: pointer;
         }
 
@@ -85,7 +83,7 @@
             position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%);
             background: white; border: 3px solid #ff9e6d; padding: 10px; border-radius: 15px;
             z-index: 200; display: none; text-align: center; width: 85%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.5s ease-out;
+            animation: popIn 0.5s ease-out;
         }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
     </style>
@@ -99,8 +97,8 @@
             <div id="game-wrapper">
                 <div id="overlay-screen">
                     <div class="container" id="screen-content">
-                        <h2 style="color:#4A90E2; margin:0 0 10px 0; font-size: 18px;">猫のごーりぃテトリス</h2>
-                        <p style="font-size:11px; color:#666;">合理的配慮で、働きやすい職場を ✨</p>
+                        <h2 style="color:#4A90E2; margin:0 0 10px 0; font-size: 20px;">猫のごーりぃテトリス</h2>
+                        <p style="font-size:12px; color:#666;">合理的配慮で、働きやすい職場を ✨</p>
                         <button class="btn-main" onclick="startGame(1)">スタート！</button>
                     </div>
                 </div>
@@ -128,7 +126,7 @@
     </div>
 
     <!-- 音声 -->
-    <audio id="bgm" src="image/bgm.mp3" loop></audio>
+    <audio id="bgm" src="image/bgm.mp3" loop preload="auto"></audio>
     <audio id="tapSound" src="image/tap.mp3" preload="auto"></audio>
     <audio id="lineSound" src="image/line.mp3" preload="auto"></audio>
     <audio id="yaySound" src="image/yay.mp3" preload="auto"></audio>
@@ -138,7 +136,6 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-// --- メール設定復活 ---
 const MAIL_TO = "goritekihairyo@care-tsuchiya.com";
 const MAIL_SUB = "合理的配慮についての相談";
 const MAIL_BODY = "障害がある等で仕事上困っていること、配慮して欲しい内容など先ずはご連絡下さい。1週間以内に合理的配慮推進委員会から返事を差し上げます。\n\nお名前：\n相談内容（簡単にで大丈夫）：";
@@ -154,9 +151,9 @@ const starColors = ["#FFE066","#A0E7E5","#FFB3BA","#CBA0FF","#FFDAC1","#FFF3B0",
 
 const storyStage1 = [
     {img:"image/kuma.png", text:"日々の業務、お疲れさまです！"},
-    {img:"image/inu.png", text:"障害や難病、その他持病などがあって"},
-    {img:"image/tori.png", text:"こうしたらお仕事しやすくなると思うことはない？"},
-    {img:"image/cat.png", text:"『合理的配慮』っていう制度があるよ"},
+    {img:"image/inu.png", text:"持病などで困っていることはない？"},
+    {img:"image/tori.png", text:"働きやすくなる工夫、一緒に考えよう！"},
+    {img:"image/cat.png", text:"『合理的配慮』という制度があるよ"},
     {img:"image/inu.png", text:"もし困っていたら相談してみてね！"}
 ];
 const storyStage2 = [
@@ -189,7 +186,18 @@ const sapotoSound = document.getElementById("sapotoSound");
 
 bgm.volume = 0.12; tapSound.volume = 0.18; lineSound.volume = 0.50; yaySound.volume = 0.60; sapotoSound.volume = 0.50;
 
+// スマホで音を鳴らすための儀式
+function unlockAudio() {
+    const sounds = [bgm, tapSound, lineSound, yaySound, sapotoSound];
+    sounds.forEach(s => {
+        s.play();
+        s.pause();
+        s.currentTime = 0;
+    });
+}
+
 function startGame(stage) {
+    unlockAudio(); // 音声の制限解除
     gameStatus = "playing"; isPaused = false;
     currentStage = stage; maxStageReached = Math.max(maxStageReached, stage);
     board = Array.from({length:ROWS},()=>Array(COLS).fill(0));
@@ -200,7 +208,8 @@ function startGame(stage) {
     document.getElementById("overlay-screen").style.display = "none";
     document.getElementById("messageBox").style.display = "flex";
     document.getElementById("controls").style.display = "grid";
-    bgm.play().catch(()=>{}); updateStoryUI(); requestAnimationFrame(update);
+    bgm.play().catch(e => console.log("BGM play failed:", e));
+    updateStoryUI(); requestAnimationFrame(update);
 }
 
 function updateStoryUI() {
@@ -217,8 +226,8 @@ function fillHoles() {
     for (let x = 0; x < COLS; x++) {
         let foundBlock = false;
         for (let y = 0; y < ROWS; y++) {
-            if (board[y][x] !== 0) { foundBlock = true; }
-            else if (foundBlock && board[y][x] === 0) { board[y][x] = "#FFB3BA"; }
+            if (board[y][x] !== 0) foundBlock = true;
+            else if (foundBlock && board[y][x] === 0) board[y][x] = "#FFB3BA";
         }
     }
 }
@@ -226,12 +235,11 @@ function fillHoles() {
 function triggerEvent() {
     if(gameStatus !== "playing") return;
     setTimeout(() => {
-        const banner = document.getElementById("event-banner");
-        banner.style.display = "block";
+        document.getElementById("event-banner").style.display = "block";
         fillHoles();
         sapotoSound.currentTime = 0; sapotoSound.play();
         createStars(30, 300);
-        setTimeout(() => { banner.style.display = "none"; }, 2500);
+        setTimeout(() => { document.getElementById("event-banner").style.display = "none"; }, 2500);
     }, 400);
 }
 
@@ -244,14 +252,27 @@ function clearLines() {
         }
     }
     if (lines > 0) {
-        score += lines * 25; lineSound.currentTime = 0; lineSound.play();
+        score += lines * 25; 
+        lineSound.currentTime = 0; lineSound.play();
         if (score >= lastMessageScore + 50) { updateStoryUI(); lastMessageScore = score; }
         if (lines >= 4) { highfiveTimer = 90; yaySound.currentTime = 0; yaySound.play(); }
         const targets = [100, 200, 400, 500];
         targets.forEach(t => { if (score >= t && lastEventScore < t) triggerEvent(); });
         lastEventScore = score;
-        if (score >= 300 && currentStage === 1) { setTimeout(showStageClearScreen, 600); }
-        else if (score >= 600) { gameStatus = "clear"; showAllClearScreen(); }
+        if (score >= 300 && currentStage === 1) { 
+            gameStatus = "intermission";
+            yaySound.currentTime = 0; yaySound.play();
+            const content = document.getElementById("screen-content");
+            content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:13px;">すごい！その調子です！</p><button class="btn-main" onclick="startGame(2)">Stage 2へ挑戦</button>`;
+            document.getElementById("overlay-screen").style.display = "flex";
+        }
+        else if (score >= 600) { 
+            gameStatus = "clear";
+            yaySound.currentTime = 0; yaySound.play();
+            const content = document.getElementById("screen-content");
+            content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><button class="btn-main" onclick="openMail()">メールで相談する</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
+            document.getElementById("overlay-screen").style.display = "flex";
+        }
     }
 }
 
@@ -273,20 +294,6 @@ function drawStar(ctx, x, y, r, color) {
 function openMail() {
     const mailto = `mailto:${MAIL_TO}?subject=${encodeURIComponent(MAIL_SUB)}&body=${encodeURIComponent(MAIL_BODY)}`;
     window.location.href = mailto;
-}
-
-function showStageClearScreen() {
-    gameStatus = "intermission"; yaySound.currentTime = 0; yaySound.play();
-    const content = document.getElementById("screen-content");
-    content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:13px; color:#666;">すごい！その調子です！</p><button class="btn-main" onclick="startGame(2)">Stage 2へ挑戦</button>`;
-    document.getElementById("overlay-screen").style.display = "flex";
-}
-
-function showAllClearScreen() {
-    yaySound.currentTime = 0; yaySound.play();
-    const content = document.getElementById("screen-content");
-    content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><p style="font-size:12px;">お疲れ様でした！</p><button class="btn-main" onclick="openMail()">メールで相談する</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
-    document.getElementById("overlay-screen").style.display = "flex";
 }
 
 function showGameOverScreen() {
@@ -316,9 +323,9 @@ function collide(p) {
 
 function drawUI() {
     if (highfiveImg.complete) { ctx.save(); ctx.globalAlpha = 0.08; ctx.drawImage(highfiveImg, 20, 150, 260, 260); ctx.restore(); }
-    ctx.fillStyle = "rgba(255, 255, 255, 0.4)"; ctx.fillRect(0, 0, GAME_WIDTH, 600);
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, GAME_WIDTH, 600);
     ctx.fillStyle = "rgba(240, 240, 240, 0.8)"; ctx.fillRect(SIDEBAR_X, 0, 150, 600);
-    ctx.strokeStyle = "#fff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(SIDEBAR_X, 0); ctx.lineTo(SIDEBAR_X, 600); ctx.stroke();
+    ctx.strokeStyle = "#eee"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(SIDEBAR_X, 0); ctx.lineTo(SIDEBAR_X, 600); ctx.stroke();
     ctx.fillStyle = "#4A90E2"; ctx.font = "bold 18px Arial"; ctx.textAlign = "center";
     ctx.fillText("NEXT", SIDEBAR_X + 75, 45);
     const ns = 22;
@@ -331,8 +338,6 @@ function drawUI() {
     ctx.fillStyle = "#ff6ec7"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 180, 120, 50, 10); ctx.fill();
     ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("SCORE", SIDEBAR_X + 75, 200); ctx.fillText(score, SIDEBAR_X + 75, 222);
     if (gouriImg.complete) ctx.drawImage(gouriImg, SIDEBAR_X + 15, 270, 120, 120);
-
-    // --- 相談ボタン ---
     ctx.fillStyle = "#4A90E2"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 410, 120, 40, 10); ctx.fill();
     ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("相談する", SIDEBAR_X + 75, 435);
 }
@@ -348,10 +353,12 @@ function update(time = 0) {
         if (collide(piece)) { 
             piece.y--; piece.shape.forEach((row,y)=>row.forEach((val,x)=>{if(val)board[piece.y+y][piece.x+x]=piece.color;})); 
             clearLines(); 
-            const data = nextPieceData;
-            nextPieceData = SHAPES[Math.floor(Math.random()*SHAPES.length)];
-            piece = { shape: data.shape, color: data.color, x: 3, y: 0 };
-            if (collide(piece)) { showGameOverScreen(); }
+            if(gameStatus === "playing") {
+                const data = nextPieceData;
+                nextPieceData = SHAPES[Math.floor(Math.random()*SHAPES.length)];
+                piece = { shape: data.shape, color: data.color, x: 3, y: 0 };
+                if (collide(piece)) { showGameOverScreen(); }
+            }
         }
         dropCounter = 0;
     }
