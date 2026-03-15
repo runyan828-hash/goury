@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>猫のごーりぃテトリス M</title>
     <style>
-        /* 基本設定: 画面からはみ出さないように設定 */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100dvh;
@@ -14,87 +13,54 @@
         }
         body {
             display: flex; flex-direction: column;
-            align-items: center; justify-content: space-between;
+            align-items: center; justify-content: flex-start;
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            padding: 5px 10px env(safe-area-inset-bottom); /* 下部のナビゲーション干渉を防ぐ */
+            padding: 5px 10px calc(15px + env(safe-area-inset-bottom));
         }
 
         h1 { font-size: 14px; color: #4A90E2; text-shadow: 1px 1px white; margin: 5px 0; flex-shrink: 0; }
 
         #main-app {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 450px;
-            height: 100%;
-            justify-content: space-between;
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; max-width: 450px; height: 100%;
         }
 
-        /* ゲーム画面とメッセージを一体化するコンテナ */
-        #unified-game-area {
-            width: 100%;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-            background: white;
-            border: 4px solid #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            overflow: hidden;
+        #unified-area {
+            width: 100%; flex: 1; display: flex; flex-direction: column;
+            background: #fff; border: 4px solid #fff; border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; min-height: 0;
         }
 
         #game-wrapper {
-            position: relative;
-            flex: 1;
-            width: 100%;
-            min-height: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.85);
+            position: relative; flex: 1; width: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background: #f0f0f0; min-height: 0;
         }
 
         canvas#game {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            display: block;
+            max-width: 100%; max-height: 100%; object-fit: contain; display: block;
         }
 
-        /* メッセージボックス（ゲーム画面と直結） */
         #messageBox {
-            width: 100%;
-            height: 80px;
-            display: none;
-            align-items: center;
-            gap: 12px;
-            background: #fff;
-            padding: 5px 15px;
-            border-top: 2px solid #f1f695; /* 境界線 */
-            flex-shrink: 0;
+            width: 100%; height: 50px; display: none; align-items: center;
+            gap: 10px; background: #fff; padding: 0 12px;
+            border-top: 2px solid #f1f695; flex-shrink: 0;
         }
-        #msgImage { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
-        #message { font-size: 13px; font-weight: bold; color: #E91E63; line-height: 1.3; flex: 1; }
+        #msgImage { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
+        #message { font-size: 11px; font-weight: bold; color: #E91E63; line-height: 1.2; flex: 1; }
 
-        /* 操作ボタン: 画面下部に配置 */
         #controls {
-            width: 100%;
-            display: none;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
-            padding: 10px 0 5px 0;
-            flex-shrink: 0;
+            width: 100%; display: none; grid-template-columns: repeat(5, 1fr);
+            gap: 6px; padding: 10px 0 0 0; flex-shrink: 0;
         }
         .btn-ctrl {
-            background: #7dc9fc; color: white; border: none; border-radius: 10px;
-            padding: 12px 0; font-size: 20px; font-weight: bold;
-            box-shadow: 0 4px #5ba8d6; cursor: pointer; user-select: none;
+            background: #7dc9fc; color: white; border: none; border-radius: 12px;
+            padding: 20px 0; font-size: 24px; font-weight: bold;
+            box-shadow: 0 5px #5ba8d6; cursor: pointer; user-select: none;
         }
         .btn-ctrl:active { transform: translateY(2px); box-shadow: 0 2px #5ba8d6; }
-        #btn-rotate { background: #ff9e6d; box-shadow: 0 4px #e68a5c; }
-        #btn-pause { background: #95a5a6; box-shadow: 0 4px #7f8c8d; }
+        #btn-rotate { background: #ff9e6d; box-shadow: 0 5px #e68a5c; }
+        #btn-pause { background: #95a5a6; box-shadow: 0 5px #7f8c8d; }
 
         #overlay-screen {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0;
@@ -115,18 +81,17 @@
             position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%);
             background: white; border: 3px solid #ff9e6d; padding: 10px; border-radius: 15px;
             z-index: 200; display: none; text-align: center; width: 85%;
-            animation: popIn 0.5s ease-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.5s ease-out;
         }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-        .pc-hint { font-size: 10px; color: #666; margin-bottom: 2px; }
     </style>
 </head>
 <body id="bgBody">
 
-    <h1>🐱 猫のごーりぃテトリス</h1>
+    <h1>🐱 猫のごーりぃと仲間たちのテトリス</h1>
 
     <div id="main-app">
-        <div id="unified-game-area">
+        <div id="unified-area">
             <div id="game-wrapper">
                 <div id="overlay-screen">
                     <div class="container" id="screen-content">
@@ -137,8 +102,8 @@
                 </div>
                 <canvas id="game" width="450" height="600"></canvas>
                 <div id="event-banner">
-                    <img id="event-icon" src="image/kuma.png" style="width:50px;height:50px;border-radius:50%;" />
-                    <div style="font-size:14px; color:#E91E63; font-weight:bold; margin-top:5px;">サポートは任せて！</div>
+                    <img id="event-icon" src="image/kuma.png" style="width:45px;height:45px;border-radius:50%;border:2px solid #ff9e6d;" />
+                    <div style="font-size:14px; color:#E91E63; font-weight:bold; margin-top:5px;">サポート！</div>
                     <div style="font-size:11px; color:#4A90E2;">（あいてる穴を埋めるよ）</div>
                 </div>
             </div>
@@ -156,7 +121,6 @@
             <button class="btn-ctrl" id="btn-down">⬇</button>
             <button class="btn-ctrl" id="btn-pause">⏸</button>
         </div>
-        <div class="pc-hint">PC: 矢印キーで移動・回転 / Pで一時停止</div>
     </div>
 
     <!-- 音声 -->
@@ -170,9 +134,10 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
+// --- メール設定復活 ---
 const MAIL_TO = "goritekihairyo@care-tsuchiya.com";
 const MAIL_SUB = "合理的配慮についての相談";
-const MAIL_BODY = "障害がある等で仕事上困っていること、配慮して欲しい内容など先ずはご連絡下さい。\n\nお名前：\n相談内容：";
+const MAIL_BODY = "障害がある等で仕事上困っていること、配慮して欲しい内容など先ずはご連絡下さい。1週間以内に合理的配慮推進委員会から返事を差し上げます。\n\nお名前：\n相談内容（簡単にで大丈夫）：";
 
 const GAME_WIDTH = 300, SIDEBAR_X = 300, ROWS = 20, COLS = 10, BLOCK = 30;
 let board = Array.from({length:ROWS},()=>Array(COLS).fill(0));
@@ -185,7 +150,7 @@ const starColors = ["#FFE066","#A0E7E5","#FFB3BA","#CBA0FF","#FFDAC1","#FFF3B0",
 
 const storyStage1 = [
     {img:"image/kuma.png", text:"日々の業務、お疲れさまです！"},
-    {img:"image/inu.png", text:"障害や難病、持病などで困っていることはない？"},
+    {img:"image/inu.png", text:"障害や難病、その他持病などがあって"},
     {img:"image/tori.png", text:"こうしたらお仕事しやすくなると思うことはない？"},
     {img:"image/cat.png", text:"『合理的配慮』っていう制度があるよ"},
     {img:"image/inu.png", text:"もし困っていたら相談してみてね！"}
@@ -258,8 +223,6 @@ function triggerEvent() {
     if(gameStatus !== "playing") return;
     setTimeout(() => {
         const banner = document.getElementById("event-banner");
-        const icons = ["image/kuma.png", "image/inu.png", "image/tori.png"];
-        document.getElementById("event-icon").src = icons[Math.floor(Math.random()*icons.length)];
         banner.style.display = "block";
         fillHoles();
         sapotoSound.currentTime = 0; sapotoSound.play();
@@ -303,20 +266,15 @@ function drawStar(ctx, x, y, r, color) {
     ctx.fill(); ctx.restore();
 }
 
-function togglePause() {
-    if (gameStatus !== "playing") return;
-    isPaused = !isPaused;
-    document.getElementById("btn-pause").textContent = isPaused ? "▶" : "⏸";
-}
-
 function openMail() {
-    window.location.href = `mailto:${MAIL_TO}?subject=${encodeURIComponent(MAIL_SUB)}&body=${encodeURIComponent(MAIL_BODY)}`;
+    const mailto = `mailto:${MAIL_TO}?subject=${encodeURIComponent(MAIL_SUB)}&body=${encodeURIComponent(MAIL_BODY)}`;
+    window.location.href = mailto;
 }
 
 function showStageClearScreen() {
     gameStatus = "intermission"; yaySound.currentTime = 0; yaySound.play();
     const content = document.getElementById("screen-content");
-    content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:13px; color:#666;">すごーい！Stage 2へ進もう！</p><button class="btn-main" onclick="startGame(2)">Stage 2開始</button>`;
+    content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:13px; color:#666;">すごい！その調子です！</p><button class="btn-main" onclick="startGame(2)">Stage 2へ挑戦</button>`;
     document.getElementById("overlay-screen").style.display = "flex";
 }
 
@@ -331,25 +289,20 @@ function showGameOverScreen() {
     gameStatus = "gameover";
     const content = document.getElementById("screen-content");
     let btns = `<button class="btn-main" onclick="startGame(1)">最初から</button>`;
-    if (maxStageReached >= 2) btns += `<button class="btn-main" style="background:#7dc9fc; margin-top:10px;" onclick="startGame(2)">Stage 2から</button>`;
+    if (maxStageReached >= 2) btns += `<button class="btn-main" style="background:#7dc9fc; margin-top:10px;" onclick="startGame(2)">Stage 2から再開</button>`;
     content.innerHTML = `<h3 style="color:#666">GAME OVER</h3><p>スコア: ${score}</p>${btns}`;
     document.getElementById("overlay-screen").style.display = "flex";
 }
 
 let nextPieceData = SHAPES[Math.floor(Math.random()*SHAPES.length)];
-function createPiece() {
-    const data = nextPieceData;
-    nextPieceData = SHAPES[Math.floor(Math.random()*SHAPES.length)];
-    return { shape: data.shape, color: data.color, x: 3, y: 0 };
-}
-let piece = createPiece();
+let piece = { shape: nextPieceData.shape, color: nextPieceData.color, x: 3, y: 0 };
 
 function drawBlock(ctx, x, y, color, size = BLOCK) {
     ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x * size + 0.5, y * size + 0.5, size - 1, size - 1, 4); ctx.fill();
     const img = images[color]; if (img && img.complete) ctx.drawImage(img, x * size + 3, y * size + 3, size - 6, size - 6);
 }
 
-function collide(p = piece) {
+function collide(p) {
     return p.shape.some((row, y) => row.some((val, x) => {
         if (val === 0) return false;
         let nx = p.x + x, ny = p.y + y;
@@ -359,8 +312,9 @@ function collide(p = piece) {
 
 function drawUI() {
     if (highfiveImg.complete) { ctx.save(); ctx.globalAlpha = 0.08; ctx.drawImage(highfiveImg, 20, 150, 260, 260); ctx.restore(); }
-    ctx.fillStyle = "rgba(240, 240, 240, 0.5)"; ctx.fillRect(SIDEBAR_X, 0, 150, 600);
-    ctx.strokeStyle = "#4A90E2"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(SIDEBAR_X, 0); ctx.lineTo(SIDEBAR_X, 600); ctx.stroke();
+    ctx.fillStyle = "rgba(255, 255, 255, 0.4)"; ctx.fillRect(0, 0, GAME_WIDTH, 600);
+    ctx.fillStyle = "rgba(240, 240, 240, 0.8)"; ctx.fillRect(SIDEBAR_X, 0, 150, 600);
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(SIDEBAR_X, 0); ctx.lineTo(SIDEBAR_X, 600); ctx.stroke();
     ctx.fillStyle = "#4A90E2"; ctx.font = "bold 18px Arial"; ctx.textAlign = "center";
     ctx.fillText("NEXT", SIDEBAR_X + 75, 45);
     const ns = 22;
@@ -373,21 +327,27 @@ function drawUI() {
     ctx.fillStyle = "#ff6ec7"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 180, 120, 50, 10); ctx.fill();
     ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("SCORE", SIDEBAR_X + 75, 200); ctx.fillText(score, SIDEBAR_X + 75, 222);
     if (gouriImg.complete) ctx.drawImage(gouriImg, SIDEBAR_X + 15, 270, 120, 120);
+
+    // --- 相談ボタン復活 ---
     ctx.fillStyle = "#4A90E2"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 410, 120, 40, 10); ctx.fill();
     ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("相談する", SIDEBAR_X + 75, 435);
 }
 
 function update(time = 0) {
     if (gameStatus !== "playing" || isPaused) {
-        if (isPaused) { ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.fillRect(0,0,GAME_WIDTH,600); ctx.fillStyle = "white"; ctx.font = "bold 30px Arial"; ctx.textAlign = "center"; ctx.fillText("PAUSE", GAME_WIDTH/2, 300); }
+        if (isPaused) { ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.fillRect(0,0,450,600); ctx.fillStyle="white"; ctx.font="24px Arial"; ctx.textAlign="center"; ctx.fillText("PAUSE", 225, 300); }
         requestAnimationFrame(update); return;
     }
     const delta = time - lastTime; lastTime = time; dropCounter += delta;
     if (dropCounter > dropInterval) {
         piece.y++;
-        if (collide()) { 
+        if (collide(piece)) { 
             piece.y--; piece.shape.forEach((row,y)=>row.forEach((val,x)=>{if(val)board[piece.y+y][piece.x+x]=piece.color;})); 
-            clearLines(); if(gameStatus === "playing") { piece = createPiece(); if (collide()) showGameOverScreen(); }
+            clearLines(); 
+            const data = nextPieceData;
+            nextPieceData = SHAPES[Math.floor(Math.random()*SHAPES.length)];
+            piece = { shape: data.shape, color: data.color, x: 3, y: 0 };
+            if (collide(piece)) { showGameOverScreen(); }
         }
         dropCounter = 0;
     }
@@ -403,21 +363,22 @@ function update(time = 0) {
     requestAnimationFrame(update);
 }
 
-const move = (dx) => { if(gameStatus==="playing" && !isPaused){ piece.x += dx; if(collide())piece.x-=dx; tapSound.currentTime=0; tapSound.play(); } };
-const rotate = () => { if(gameStatus==="playing" && !isPaused){ const old=piece.shape; piece.shape=piece.shape[0].map((_,i)=>piece.shape.map(r=>r[i]).reverse()); if(collide())piece.shape=old; tapSound.currentTime=0; tapSound.play(); } };
-const down = () => { if(gameStatus==="playing" && !isPaused){ piece.y++; if(collide())piece.y--; tapSound.currentTime=0; tapSound.play(); } };
+const move = (dx) => { if(gameStatus==="playing" && !isPaused){ piece.x += dx; if(collide(piece))piece.x-=dx; tapSound.currentTime=0; tapSound.play(); } };
+const rotate = () => { if(gameStatus==="playing" && !isPaused){ const old=piece.shape; piece.shape=piece.shape[0].map((_,i)=>piece.shape.map(r=>r[i]).reverse()); if(collide(piece))piece.shape=old; tapSound.currentTime=0; tapSound.play(); } };
+const down = () => { if(gameStatus==="playing" && !isPaused){ piece.y++; if(collide(piece))piece.y--; tapSound.currentTime=0; tapSound.play(); } };
 
 const addEv = (id, fn) => {
     const el = document.getElementById(id);
     el.addEventListener('touchstart', (e) => { e.preventDefault(); fn(); }, {passive: false});
     el.addEventListener('mousedown', (e) => { e.preventDefault(); fn(); });
 };
-addEv("btn-left", () => move(-1)); addEv("btn-right", () => move(1)); addEv("btn-rotate", rotate); addEv("btn-down", down); addEv("btn-pause", togglePause);
+addEv("btn-left", () => move(-1)); addEv("btn-right", () => move(1)); addEv("btn-rotate", rotate); addEv("btn-down", down); addEv("btn-pause", () => { isPaused = !isPaused; document.getElementById("btn-pause").textContent = isPaused ? "▶" : "⏸"; });
 
 window.addEventListener('keydown', e => { 
-    if(e.key === "ArrowLeft") move(-1); if(e.key === "ArrowRight") move(1); if(e.key === "ArrowUp") rotate(); if(e.key === "ArrowDown") down(); if(e.key.toLowerCase() === "p") togglePause(); 
+    if(e.key === "ArrowLeft") move(-1); if(e.key === "ArrowRight") move(1); if(e.key === "ArrowUp") rotate(); if(e.key === "ArrowDown") down(); 
 });
 
+// --- サイドバーボタンのクリック判定復活 ---
 canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) * (canvas.width / rect.width);
