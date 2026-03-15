@@ -5,81 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>猫のごーりぃテトリス M</title>
     <style>
+        /* 基本設定: 画面からはみ出さないように設定 */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body {
-            margin: 0; padding: 0; width: 100%; height: 100%;
+            margin: 0; padding: 0; width: 100%; height: 100dvh;
             overflow: hidden; touch-action: none;
             background: linear-gradient(135deg, #edaac1, #9ff6f6, #f1f695);
         }
         body {
             display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-start;
+            align-items: center; justify-content: space-between;
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            padding: 10px;
-            transition: background 1s ease;
+            padding: 5px 10px env(safe-area-inset-bottom); /* 下部のナビゲーション干渉を防ぐ */
         }
 
-        h1 { font-size: 16px; color: #4A90E2; text-shadow: 1px 1px white; margin: 5px 0; flex-shrink: 0; text-align: center; }
+        h1 { font-size: 14px; color: #4A90E2; text-shadow: 1px 1px white; margin: 5px 0; flex-shrink: 0; }
 
         #main-app {
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 500px;
+            max-width: 450px;
             height: 100%;
+            justify-content: space-between;
+        }
+
+        /* ゲーム画面とメッセージを一体化するコンテナ */
+        #unified-game-area {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: white;
+            border: 4px solid #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
         #game-wrapper {
-            position: relative; 
-            width: 100%;
+            position: relative;
             flex: 1;
-            display: flex; 
-            flex-direction: column;
+            width: 100%;
+            min-height: 0;
+            display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 0; /* flex配下での縮小を許可 */
+            background: rgba(255, 255, 255, 0.85);
         }
 
         canvas#game {
-            background: rgba(255, 255, 255, 0.85); 
-            border: 4px solid #fff; 
-            border-radius: 12px; 
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             display: block;
         }
 
+        /* メッセージボックス（ゲーム画面と直結） */
         #messageBox {
             width: 100%;
-            min-height: 70px;
-            display: none; 
-            align-items: center; 
+            height: 80px;
+            display: none;
+            align-items: center;
             gap: 12px;
-            background: rgba(255, 255, 255, 0.98); 
-            padding: 8px 15px; 
-            border-radius: 15px; 
-            border: 3px solid #fff;
-            margin-top: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: #fff;
+            padding: 5px 15px;
+            border-top: 2px solid #f1f695; /* 境界線 */
             flex-shrink: 0;
         }
-        #msgImage { width: 45px; height: 45px; border-radius: 50%; background: #fff; flex-shrink: 0; border: 2px solid #f1f695; }
-        #message { font-size: 14px; font-weight: bold; color: #E91E63; line-height: 1.3; flex: 1; }
+        #msgImage { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
+        #message { font-size: 13px; font-weight: bold; color: #E91E63; line-height: 1.3; flex: 1; }
 
+        /* 操作ボタン: 画面下部に配置 */
         #controls {
-            width: 100%; 
+            width: 100%;
             display: none;
-            grid-template-columns: repeat(5, 1fr); 
-            gap: 6px; 
-            padding: 10px 0; 
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            padding: 10px 0 5px 0;
             flex-shrink: 0;
         }
         .btn-ctrl {
             background: #7dc9fc; color: white; border: none; border-radius: 10px;
-            padding: 15px 0; font-size: 20px; font-weight: bold;
+            padding: 12px 0; font-size: 20px; font-weight: bold;
             box-shadow: 0 4px #5ba8d6; cursor: pointer; user-select: none;
         }
         .btn-ctrl:active { transform: translateY(2px); box-shadow: 0 2px #5ba8d6; }
@@ -88,57 +98,55 @@
 
         #overlay-screen {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.95);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 500; text-align: center; padding: 20px; border-radius: 12px;
+            z-index: 500; text-align: center; padding: 20px;
         }
         .container {
             background: white; padding: 20px; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 300px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 280px;
         }
         .btn-main {
             width: 100%; padding: 12px; font-size: 18px; font-weight: bold; margin-top: 10px;
             background: #ff6ec7; color: white; border: none; border-radius: 50px; cursor: pointer;
-            text-decoration: none; display: inline-block;
         }
 
         #event-banner {
             position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%);
-            background: white; border: 3px solid #ff9e6d; padding: 15px; border-radius: 15px;
-            z-index: 200; display: none; text-align: center; width: 80%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.5s ease-out;
+            background: white; border: 3px solid #ff9e6d; padding: 10px; border-radius: 15px;
+            z-index: 200; display: none; text-align: center; width: 85%;
+            animation: popIn 0.5s ease-out;
         }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-        
-        /* PC用キーボード説明 */
-        .pc-hint { display: none; font-size: 11px; color: #666; margin-top: 5px; }
-        @media (min-width: 768px) { .pc-hint { display: block; } }
+        .pc-hint { font-size: 10px; color: #666; margin-bottom: 2px; }
     </style>
 </head>
 <body id="bgBody">
 
-    <h1>🐱 猫のごーりぃと仲間たちのテトリス</h1>
+    <h1>🐱 猫のごーりぃテトリス</h1>
 
     <div id="main-app">
-        <div id="game-wrapper">
-            <div id="overlay-screen">
-                <div class="container" id="screen-content">
-                    <h2 style="color:#4A90E2; margin:0 0 10px 0;">猫のごーりぃテトリス</h2>
-                    <p style="font-size:12px; color:#666;">合理的配慮で、働きやすい職場を ✨</p>
-                    <button class="btn-main" onclick="startGame(1)">スタート！</button>
+        <div id="unified-game-area">
+            <div id="game-wrapper">
+                <div id="overlay-screen">
+                    <div class="container" id="screen-content">
+                        <h2 style="color:#4A90E2; margin:0 0 10px 0; font-size: 18px;">猫のごーりぃテトリス</h2>
+                        <p style="font-size:11px; color:#666;">合理的配慮で、働きやすい職場を ✨</p>
+                        <button class="btn-main" onclick="startGame(1)">スタート！</button>
+                    </div>
+                </div>
+                <canvas id="game" width="450" height="600"></canvas>
+                <div id="event-banner">
+                    <img id="event-icon" src="image/kuma.png" style="width:50px;height:50px;border-radius:50%;" />
+                    <div style="font-size:14px; color:#E91E63; font-weight:bold; margin-top:5px;">サポートは任せて！</div>
+                    <div style="font-size:11px; color:#4A90E2;">（あいてる穴を埋めるよ）</div>
                 </div>
             </div>
-            <canvas id="game" width="450" height="600"></canvas>
-            <div id="event-banner">
-                <img id="event-icon" src="image/kuma.png" style="width:60px;height:60px;border-radius:50%;border:2px solid #ff9e6d;" />
-                <div id="event-name" style="font-size:16px; color:#E91E63; font-weight:bold; margin-top:5px;">サポートは任せて！</div>
-                <div id="event-detail" style="font-size:13px; color:#4A90E2; font-weight:bold;">（あいてる穴を埋めるよ）</div>
-            </div>
-        </div>
 
-        <div id="messageBox">
-            <img id="msgImage" src="image/cat.png" />
-            <div id="message">準備中...</div>
+            <div id="messageBox">
+                <img id="msgImage" src="image/cat.png" />
+                <div id="message">準備中...</div>
+            </div>
         </div>
 
         <div id="controls">
@@ -164,7 +172,7 @@ const ctx = canvas.getContext("2d");
 
 const MAIL_TO = "goritekihairyo@care-tsuchiya.com";
 const MAIL_SUB = "合理的配慮についての相談";
-const MAIL_BODY = "障害がある等で仕事上困っていること、配慮して欲しい内容など先ずはご連絡下さい。1週間以内に合理的配慮推進委員会から返事を差し上げます。\n\nお名前：\n相談内容（簡単にで大丈夫）：";
+const MAIL_BODY = "障害がある等で仕事上困っていること、配慮して欲しい内容など先ずはご連絡下さい。\n\nお名前：\n相談内容：";
 
 const GAME_WIDTH = 300, SIDEBAR_X = 300, ROWS = 20, COLS = 10, BLOCK = 30;
 let board = Array.from({length:ROWS},()=>Array(COLS).fill(0));
@@ -177,15 +185,15 @@ const starColors = ["#FFE066","#A0E7E5","#FFB3BA","#CBA0FF","#FFDAC1","#FFF3B0",
 
 const storyStage1 = [
     {img:"image/kuma.png", text:"日々の業務、お疲れさまです！"},
-    {img:"image/inu.png", text:"障害や難病、その他持病などがあって"},
+    {img:"image/inu.png", text:"障害や難病、持病などで困っていることはない？"},
     {img:"image/tori.png", text:"こうしたらお仕事しやすくなると思うことはない？"},
     {img:"image/cat.png", text:"『合理的配慮』っていう制度があるよ"},
     {img:"image/inu.png", text:"もし困っていたら相談してみてね！"}
 ];
 const storyStage2 = [
     {img:"image/neko.png", text:"大切なのは「対話」することだよ！"},
+    {img:"image/tori.png", text:"例えば、読みやすい資料を用意したり"},
     {img:"image/kuma.png", text:"静かな場所で作業できるようにしたり"},
-    {img:"image/inu.png", text:"自分の得意なやり方を見つけよう！"},
     {img:"image/inu.png", text:"障害者手帳があってもなくても"},
     {img:"image/inu.png", text:"先ずは相談してみてね！"}
 ];
@@ -223,7 +231,7 @@ function startGame(stage) {
     document.getElementById("overlay-screen").style.display = "none";
     document.getElementById("messageBox").style.display = "flex";
     document.getElementById("controls").style.display = "grid";
-    bgm.play(); updateStoryUI(); requestAnimationFrame(update);
+    bgm.play().catch(()=>{}); updateStoryUI(); requestAnimationFrame(update);
 }
 
 function updateStoryUI() {
@@ -240,36 +248,24 @@ function fillHoles() {
     for (let x = 0; x < COLS; x++) {
         let foundBlock = false;
         for (let y = 0; y < ROWS; y++) {
-            if (board[y][x] !== 0) {
-                foundBlock = true;
-            } else if (foundBlock && board[y][x] === 0) {
-                board[y][x] = "#FFB3BA"; 
-            }
+            if (board[y][x] !== 0) { foundBlock = true; }
+            else if (foundBlock && board[y][x] === 0) { board[y][x] = "#FFB3BA"; }
         }
     }
 }
 
 function triggerEvent() {
     if(gameStatus !== "playing") return;
-    // タイミングをずらすためにsetTimeoutを使用
     setTimeout(() => {
         const banner = document.getElementById("event-banner");
         const icons = ["image/kuma.png", "image/inu.png", "image/tori.png"];
         document.getElementById("event-icon").src = icons[Math.floor(Math.random()*icons.length)];
         banner.style.display = "block";
-        
         fillHoles();
-        sapotoSound.currentTime = 0;
-        sapotoSound.play();
+        sapotoSound.currentTime = 0; sapotoSound.play();
         createStars(30, 300);
-
         setTimeout(() => { banner.style.display = "none"; }, 2500);
-    }, 400); // 0.4秒ずらす
-}
-
-function playLineSound() {
-    lineSound.currentTime = 0;
-    lineSound.play().catch(e => {});
+    }, 400);
 }
 
 function clearLines() {
@@ -281,33 +277,22 @@ function clearLines() {
         }
     }
     if (lines > 0) {
-        score += lines * 25; 
-        playLineSound();
+        score += lines * 25; lineSound.currentTime = 0; lineSound.play();
         if (score >= lastMessageScore + 50) { updateStoryUI(); lastMessageScore = score; }
         if (lines >= 4) { highfiveTimer = 90; yaySound.currentTime = 0; yaySound.play(); }
-
         const targets = [100, 200, 400, 500];
-        targets.forEach(t => {
-            if (score >= t && lastEventScore < t) triggerEvent();
-        });
+        targets.forEach(t => { if (score >= t && lastEventScore < t) triggerEvent(); });
         lastEventScore = score;
-
-        if (score >= 300 && currentStage === 1) {
-            setTimeout(showStageClearScreen, 600);
-        } else if (score >= 600) {
-            gameStatus = "clear";
-            showAllClearScreen();
-        }
+        if (score >= 300 && currentStage === 1) { setTimeout(showStageClearScreen, 600); }
+        else if (score >= 600) { gameStatus = "clear"; showAllClearScreen(); }
     }
 }
 
 function createStars(count, yPos) {
     for (let i = 0; i < count; i++) {
         particles.push({
-            x: Math.random() * GAME_WIDTH, y: yPos,
-            vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12,
-            color: starColors[Math.floor(Math.random() * starColors.length)],
-            size: Math.random() * 8 + 4, life: 60
+            x: Math.random() * GAME_WIDTH, y: yPos, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12,
+            color: starColors[Math.floor(Math.random() * starColors.length)], size: Math.random() * 8 + 4, life: 60
         });
     }
 }
@@ -325,26 +310,20 @@ function togglePause() {
 }
 
 function openMail() {
-    const mailto = `mailto:${MAIL_TO}?subject=${encodeURIComponent(MAIL_SUB)}&body=${encodeURIComponent(MAIL_BODY)}`;
-    window.location.href = mailto;
+    window.location.href = `mailto:${MAIL_TO}?subject=${encodeURIComponent(MAIL_SUB)}&body=${encodeURIComponent(MAIL_BODY)}`;
 }
 
 function showStageClearScreen() {
-    gameStatus = "intermission";
-    // 1面クリア時に音を鳴らす
-    yaySound.currentTime = 0;
-    yaySound.play();
-
+    gameStatus = "intermission"; yaySound.currentTime = 0; yaySound.play();
     const content = document.getElementById("screen-content");
-    content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:14px; color:#666;">すごーい！その調子です！</p><button class="btn-main" onclick="startGame(2)">Stage 2へ挑戦</button>`;
+    content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:13px; color:#666;">すごーい！Stage 2へ進もう！</p><button class="btn-main" onclick="startGame(2)">Stage 2開始</button>`;
     document.getElementById("overlay-screen").style.display = "flex";
 }
 
 function showAllClearScreen() {
-    yaySound.currentTime = 0;
-    yaySound.play();
+    yaySound.currentTime = 0; yaySound.play();
     const content = document.getElementById("screen-content");
-    content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><p style="font-size:12px;">お疲れ様でした！</p><button class="btn-main" onclick="openMail()">メールで相談する</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">もう一度遊ぶ</button>`;
+    content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><p style="font-size:12px;">お疲れ様でした！</p><button class="btn-main" onclick="openMail()">メールで相談する</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
     document.getElementById("overlay-screen").style.display = "flex";
 }
 
@@ -352,7 +331,7 @@ function showGameOverScreen() {
     gameStatus = "gameover";
     const content = document.getElementById("screen-content");
     let btns = `<button class="btn-main" onclick="startGame(1)">最初から</button>`;
-    if (maxStageReached >= 2) btns += `<button class="btn-main" style="background:#7dc9fc; margin-top:10px;" onclick="startGame(2)">Stage 2から再開</button>`;
+    if (maxStageReached >= 2) btns += `<button class="btn-main" style="background:#7dc9fc; margin-top:10px;" onclick="startGame(2)">Stage 2から</button>`;
     content.innerHTML = `<h3 style="color:#666">GAME OVER</h3><p>スコア: ${score}</p>${btns}`;
     document.getElementById("overlay-screen").style.display = "flex";
 }
@@ -367,8 +346,7 @@ let piece = createPiece();
 
 function drawBlock(ctx, x, y, color, size = BLOCK) {
     ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x * size + 0.5, y * size + 0.5, size - 1, size - 1, 4); ctx.fill();
-    const img = images[color];
-    if (img && img.complete) ctx.drawImage(img, x * size + 3, y * size + 3, size - 6, size - 6);
+    const img = images[color]; if (img && img.complete) ctx.drawImage(img, x * size + 3, y * size + 3, size - 6, size - 6);
 }
 
 function collide(p = piece) {
@@ -380,7 +358,7 @@ function collide(p = piece) {
 }
 
 function drawUI() {
-    if (highfiveImg.complete) { ctx.save(); ctx.globalAlpha = 0.08; ctx.drawImage(highfiveImg, 20, 170, 260, 260); ctx.restore(); }
+    if (highfiveImg.complete) { ctx.save(); ctx.globalAlpha = 0.08; ctx.drawImage(highfiveImg, 20, 150, 260, 260); ctx.restore(); }
     ctx.fillStyle = "rgba(240, 240, 240, 0.5)"; ctx.fillRect(SIDEBAR_X, 0, 150, 600);
     ctx.strokeStyle = "#4A90E2"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(SIDEBAR_X, 0); ctx.lineTo(SIDEBAR_X, 600); ctx.stroke();
     ctx.fillStyle = "#4A90E2"; ctx.font = "bold 18px Arial"; ctx.textAlign = "center";
@@ -401,28 +379,15 @@ function drawUI() {
 
 function update(time = 0) {
     if (gameStatus !== "playing" || isPaused) {
-        if (isPaused) { 
-            ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.fillRect(0,0,GAME_WIDTH,600); 
-            ctx.fillStyle = "white"; ctx.font = "bold 30px Arial"; ctx.textAlign = "center"; ctx.fillText("PAUSE", GAME_WIDTH/2, 300); 
-        }
-        if (particles.length > 0) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); drawUI();
-            particles.forEach((p, i) => { drawStar(ctx, p.x, p.y, p.size, p.color); p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life--; if (p.life <= 0) particles.splice(i, 1); });
-            requestAnimationFrame(update);
-        } else if (isPaused) { requestAnimationFrame(update); }
-        return;
+        if (isPaused) { ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.fillRect(0,0,GAME_WIDTH,600); ctx.fillStyle = "white"; ctx.font = "bold 30px Arial"; ctx.textAlign = "center"; ctx.fillText("PAUSE", GAME_WIDTH/2, 300); }
+        requestAnimationFrame(update); return;
     }
     const delta = time - lastTime; lastTime = time; dropCounter += delta;
     if (dropCounter > dropInterval) {
         piece.y++;
         if (collide()) { 
-            piece.y--; 
-            piece.shape.forEach((row,y)=>row.forEach((val,x)=>{if(val)board[piece.y+y][piece.x+x]=piece.color;})); 
-            clearLines(); 
-            if(gameStatus === "playing") { 
-                piece = createPiece(); 
-                if (collide()) showGameOverScreen(); 
-            } 
+            piece.y--; piece.shape.forEach((row,y)=>row.forEach((val,x)=>{if(val)board[piece.y+y][piece.x+x]=piece.color;})); 
+            clearLines(); if(gameStatus === "playing") { piece = createPiece(); if (collide()) showGameOverScreen(); }
         }
         dropCounter = 0;
     }
@@ -430,13 +395,10 @@ function update(time = 0) {
     board.forEach((row, y) => row.forEach((val, x) => { if (val) drawBlock(ctx, x, y, val); }));
     piece.shape.forEach((row, y) => row.forEach((val, x) => { if (val) drawBlock(ctx, piece.x+x, piece.y+y, piece.color); }));
     particles.forEach((p, i) => { drawStar(ctx, p.x, p.y, p.size, p.color); p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life--; if (p.life <= 0) particles.splice(i, 1); });
-    
     if (highfiveTimer > 0) {
-        const progress = (90 - highfiveTimer) / 90; 
-        const scale = 0.6 + (1 - Math.pow(1-progress,3)) * 0.4 + Math.sin(progress * Math.PI) * 0.08;
+        const progress = (90 - highfiveTimer) / 90; const scale = 0.6 + (1 - Math.pow(1-progress,3)) * 0.4 + Math.sin(progress * Math.PI) * 0.08;
         ctx.save(); ctx.globalAlpha = Math.min(1, 0.2 + (1 - Math.pow(1-progress,3)) * 0.8);
-        ctx.drawImage(highfiveImg, 150 - (250*scale)/2, 300 - (250*scale)/2, 250*scale, 250*scale); 
-        ctx.restore(); highfiveTimer--;
+        ctx.drawImage(highfiveImg, 150 - (250*scale)/2, 300 - (250*scale)/2, 250*scale, 250*scale); ctx.restore(); highfiveTimer--;
     }
     requestAnimationFrame(update);
 }
@@ -453,11 +415,7 @@ const addEv = (id, fn) => {
 addEv("btn-left", () => move(-1)); addEv("btn-right", () => move(1)); addEv("btn-rotate", rotate); addEv("btn-down", down); addEv("btn-pause", togglePause);
 
 window.addEventListener('keydown', e => { 
-    if(e.key === "ArrowLeft") move(-1); 
-    if(e.key === "ArrowRight") move(1); 
-    if(e.key === "ArrowUp") rotate(); 
-    if(e.key === "ArrowDown") down(); 
-    if(e.key.toLowerCase() === "p") togglePause(); 
+    if(e.key === "ArrowLeft") move(-1); if(e.key === "ArrowRight") move(1); if(e.key === "ArrowUp") rotate(); if(e.key === "ArrowDown") down(); if(e.key.toLowerCase() === "p") togglePause(); 
 });
 
 canvas.addEventListener('click', (e) => {
