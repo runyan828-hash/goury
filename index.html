@@ -9,58 +9,66 @@
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100dvh;
             overflow: hidden; touch-action: none;
-            background: linear-gradient(135deg, #edaac1, #9ff6f6, #f1f695);
+            /* 背景を薄いピンクに変更 */
+            background: linear-gradient(180deg, #fff5f7 0%, #ffeef2 100%);
         }
         body {
             display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-start;
+            align-items: center; justify-content: flex-start; /* 上寄せ */
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            padding: 5px 10px calc(15px + env(safe-area-inset-bottom));
+            padding: 5px 10px 0 10px;
         }
 
-        h1 { font-size: 14px; color: #4A90E2; text-shadow: 1px 1px white; margin: 5px 0; flex-shrink: 0; }
+        h1 { font-size: 14px; color: #4A90E2; text-shadow: 1px 1px white; margin: 2px 0 5px 0; flex-shrink: 0; }
 
         #main-app {
             display: flex; flex-direction: column; align-items: center;
-            width: 100%; max-width: 450px; height: 100%;
+            width: 100%; max-width: 450px;
+            height: 100%; /* 全体を使って下部に余白を作る */
         }
 
+        /* ゲーム画面とメッセージを一体化 */
         #unified-area {
-            width: 100%; flex: 1; display: flex; flex-direction: column;
-            background: #fff; border: 4px solid #fff; border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; min-height: 0;
+            width: 100%; flex: 0 1 auto; /* コンテンツに合わせて高さを決める */
+            display: flex; flex-direction: column;
+            background: #fff; border: 4px solid #fff; border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow: hidden;
+            max-height: 65vh; /* 画面の65%までに制限してボタンを上げる */
         }
 
         #game-wrapper {
             position: relative; flex: 1; width: 100%;
             display: flex; justify-content: center; align-items: center;
-            background: #f0f0f0; min-height: 0;
+            background: #fafafa; min-height: 0;
         }
 
         canvas#game {
             max-width: 100%; max-height: 100%; object-fit: contain; display: block;
         }
 
+        /* スリムかつ文字の大きいメッセージボックス */
         #messageBox {
             width: 100%; height: 50px; display: none; align-items: center;
             gap: 10px; background: #fff; padding: 0 12px;
             border-top: 2px solid #f1f695; flex-shrink: 0;
         }
-        #msgImage { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
-        #message { font-size: 11px; font-weight: bold; color: #E91E63; line-height: 1.2; flex: 1; }
+        #msgImage { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
+        #message { font-size: 14px; font-weight: bold; color: #E91E63; line-height: 1.2; flex: 1; }
 
+        /* 操作ボタン: 位置を上げて下に余白を確保 */
         #controls {
             width: 100%; display: none; grid-template-columns: repeat(5, 1fr);
-            gap: 6px; padding: 10px 0 0 0; flex-shrink: 0;
+            gap: 6px; padding: 10px 0; flex-shrink: 0;
+            margin-bottom: 60px; /* 操作ボタンの下に大きな余白を作る（戻るボタン対策） */
         }
         .btn-ctrl {
-            background: #7dc9fc; color: white; border: none; border-radius: 12px;
-            padding: 20px 0; font-size: 24px; font-weight: bold;
-            box-shadow: 0 5px #5ba8d6; cursor: pointer; user-select: none;
+            background: #7dc9fc; color: white; border: none; border-radius: 10px;
+            padding: 18px 0; font-size: 24px; font-weight: bold;
+            box-shadow: 0 4px #5ba8d6; cursor: pointer; user-select: none;
         }
         .btn-ctrl:active { transform: translateY(2px); box-shadow: 0 2px #5ba8d6; }
-        #btn-rotate { background: #ff9e6d; box-shadow: 0 5px #e68a5c; }
-        #btn-pause { background: #95a5a6; box-shadow: 0 5px #7f8c8d; }
+        #btn-rotate { background: #ff9e6d; box-shadow: 0 4px #e68a5c; }
+        #btn-pause { background: #95a5a6; box-shadow: 0 4px #7f8c8d; }
 
         #overlay-screen {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0;
@@ -69,7 +77,7 @@
             z-index: 500; text-align: center; padding: 20px;
         }
         .container {
-            background: white; padding: 20px; border-radius: 20px;
+            background: white; padding: 15px; border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 280px;
         }
         .btn-main {
@@ -88,23 +96,23 @@
 </head>
 <body id="bgBody">
 
-    <h1>🐱 猫のごーりぃと仲間たちのテトリス</h1>
+    <h1>🐱 猫のごーりぃテトリス</h1>
 
     <div id="main-app">
         <div id="unified-area">
             <div id="game-wrapper">
                 <div id="overlay-screen">
                     <div class="container" id="screen-content">
-                        <h2 style="color:#4A90E2; margin:0 0 10px 0; font-size: 18px;">猫のごーりぃテトリス</h2>
+                        <h2 style="color:#4A90E2; margin:0 0 5px 0; font-size: 18px;">猫のごーりぃテトリス</h2>
                         <p style="font-size:11px; color:#666;">合理的配慮で、働きやすい職場を ✨</p>
                         <button class="btn-main" onclick="startGame(1)">スタート！</button>
                     </div>
                 </div>
                 <canvas id="game" width="450" height="600"></canvas>
                 <div id="event-banner">
-                    <img id="event-icon" src="image/kuma.png" style="width:45px;height:45px;border-radius:50%;border:2px solid #ff9e6d;" />
-                    <div style="font-size:14px; color:#E91E63; font-weight:bold; margin-top:5px;">サポート！</div>
-                    <div style="font-size:11px; color:#4A90E2;">（あいてる穴を埋めるよ）</div>
+                    <img id="event-icon" src="image/kuma.png" style="width:40px;height:40px;border-radius:50%;border:2px solid #ff9e6d;" />
+                    <div style="font-size:13px; color:#E91E63; font-weight:bold; margin-top:5px;">サポート！</div>
+                    <div style="font-size:10px; color:#4A90E2;">（あいてる穴を埋めるよ）</div>
                 </div>
             </div>
 
@@ -123,7 +131,6 @@
         </div>
     </div>
 
-    <!-- 音声 -->
     <audio id="bgm" src="image/bgm.mp3" loop></audio>
     <audio id="tapSound" src="image/tap.mp3" preload="auto"></audio>
     <audio id="lineSound" src="image/line.mp3" preload="auto"></audio>
@@ -134,7 +141,7 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-// --- メール設定復活 ---
+// --- メール設定 ---
 const MAIL_TO = "goritekihairyo@care-tsuchiya.com";
 const MAIL_SUB = "合理的配慮についての相談";
 const MAIL_BODY = "障害がある等で仕事上困っていること、配慮して欲しい内容など先ずはご連絡下さい。1週間以内に合理的配慮推進委員会から返事を差し上げます。\n\nお名前：\n相談内容（簡単にで大丈夫）：";
@@ -150,9 +157,9 @@ const starColors = ["#FFE066","#A0E7E5","#FFB3BA","#CBA0FF","#FFDAC1","#FFF3B0",
 
 const storyStage1 = [
     {img:"image/kuma.png", text:"日々の業務、お疲れさまです！"},
-    {img:"image/inu.png", text:"障害や難病、その他持病などがあって"},
-    {img:"image/tori.png", text:"こうしたらお仕事しやすくなると思うことはない？"},
-    {img:"image/cat.png", text:"『合理的配慮』っていう制度があるよ"},
+    {img:"image/inu.png", text:"持病などで困っていることはない？"},
+    {img:"image/tori.png", text:"働きやすくなる工夫、一緒に考えよう！"},
+    {img:"image/cat.png", text:"『合理的配慮』という制度があるよ"},
     {img:"image/inu.png", text:"もし困っていたら相談してみてね！"}
 ];
 const storyStage2 = [
@@ -211,10 +218,10 @@ function updateStoryUI() {
 
 function fillHoles() {
     for (let x = 0; x < COLS; x++) {
-        let foundBlock = false;
+        let found = false;
         for (let y = 0; y < ROWS; y++) {
-            if (board[y][x] !== 0) { foundBlock = true; }
-            else if (foundBlock && board[y][x] === 0) { board[y][x] = "#FFB3BA"; }
+            if (board[y][x] !== 0) found = true;
+            else if (found && board[y][x] === 0) board[y][x] = "#FFB3BA";
         }
     }
 }
@@ -222,12 +229,10 @@ function fillHoles() {
 function triggerEvent() {
     if(gameStatus !== "playing") return;
     setTimeout(() => {
-        const banner = document.getElementById("event-banner");
-        banner.style.display = "block";
-        fillHoles();
-        sapotoSound.currentTime = 0; sapotoSound.play();
+        document.getElementById("event-banner").style.display = "block";
+        fillHoles(); sapotoSound.currentTime = 0; sapotoSound.play();
         createStars(30, 300);
-        setTimeout(() => { banner.style.display = "none"; }, 2500);
+        setTimeout(() => { document.getElementById("event-banner").style.display = "none"; }, 2500);
     }, 400);
 }
 
@@ -267,21 +272,20 @@ function drawStar(ctx, x, y, r, color) {
 }
 
 function openMail() {
-    const mailto = `mailto:${MAIL_TO}?subject=${encodeURIComponent(MAIL_SUB)}&body=${encodeURIComponent(MAIL_BODY)}`;
-    window.location.href = mailto;
+    window.location.href = `mailto:${MAIL_TO}?subject=${encodeURIComponent(MAIL_SUB)}&body=${encodeURIComponent(MAIL_BODY)}`;
 }
 
 function showStageClearScreen() {
     gameStatus = "intermission"; yaySound.currentTime = 0; yaySound.play();
     const content = document.getElementById("screen-content");
-    content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:13px; color:#666;">すごい！その調子です！</p><button class="btn-main" onclick="startGame(2)">Stage 2へ挑戦</button>`;
+    content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:13px;">その調子！Stage 2へ進もう！</p><button class="btn-main" onclick="startGame(2)">Stage 2開始</button>`;
     document.getElementById("overlay-screen").style.display = "flex";
 }
 
 function showAllClearScreen() {
     yaySound.currentTime = 0; yaySound.play();
     const content = document.getElementById("screen-content");
-    content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><p style="font-size:12px;">お疲れ様でした！</p><button class="btn-main" onclick="openMail()">メールで相談する</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
+    content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><button class="btn-main" onclick="openMail()">メールで相談する</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
     document.getElementById("overlay-screen").style.display = "flex";
 }
 
@@ -289,7 +293,7 @@ function showGameOverScreen() {
     gameStatus = "gameover";
     const content = document.getElementById("screen-content");
     let btns = `<button class="btn-main" onclick="startGame(1)">最初から</button>`;
-    if (maxStageReached >= 2) btns += `<button class="btn-main" style="background:#7dc9fc; margin-top:10px;" onclick="startGame(2)">Stage 2から再開</button>`;
+    if (maxStageReached >= 2) btns += `<button class="btn-main" style="background:#7dc9fc; margin-top:10px;" onclick="startGame(2)">Stage 2から</button>`;
     content.innerHTML = `<h3 style="color:#666">GAME OVER</h3><p>スコア: ${score}</p>${btns}`;
     document.getElementById("overlay-screen").style.display = "flex";
 }
@@ -312,9 +316,9 @@ function collide(p) {
 
 function drawUI() {
     if (highfiveImg.complete) { ctx.save(); ctx.globalAlpha = 0.08; ctx.drawImage(highfiveImg, 20, 150, 260, 260); ctx.restore(); }
-    ctx.fillStyle = "rgba(255, 255, 255, 0.4)"; ctx.fillRect(0, 0, GAME_WIDTH, 600);
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, GAME_WIDTH, 600);
     ctx.fillStyle = "rgba(240, 240, 240, 0.8)"; ctx.fillRect(SIDEBAR_X, 0, 150, 600);
-    ctx.strokeStyle = "#fff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(SIDEBAR_X, 0); ctx.lineTo(SIDEBAR_X, 600); ctx.stroke();
+    ctx.strokeStyle = "#eee"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(SIDEBAR_X, 0); ctx.lineTo(SIDEBAR_X, 600); ctx.stroke();
     ctx.fillStyle = "#4A90E2"; ctx.font = "bold 18px Arial"; ctx.textAlign = "center";
     ctx.fillText("NEXT", SIDEBAR_X + 75, 45);
     const ns = 22;
@@ -327,8 +331,6 @@ function drawUI() {
     ctx.fillStyle = "#ff6ec7"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 180, 120, 50, 10); ctx.fill();
     ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("SCORE", SIDEBAR_X + 75, 200); ctx.fillText(score, SIDEBAR_X + 75, 222);
     if (gouriImg.complete) ctx.drawImage(gouriImg, SIDEBAR_X + 15, 270, 120, 120);
-
-    // --- 相談ボタン復活 ---
     ctx.fillStyle = "#4A90E2"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 410, 120, 40, 10); ctx.fill();
     ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("相談する", SIDEBAR_X + 75, 435);
 }
@@ -374,11 +376,8 @@ const addEv = (id, fn) => {
 };
 addEv("btn-left", () => move(-1)); addEv("btn-right", () => move(1)); addEv("btn-rotate", rotate); addEv("btn-down", down); addEv("btn-pause", () => { isPaused = !isPaused; document.getElementById("btn-pause").textContent = isPaused ? "▶" : "⏸"; });
 
-window.addEventListener('keydown', e => { 
-    if(e.key === "ArrowLeft") move(-1); if(e.key === "ArrowRight") move(1); if(e.key === "ArrowUp") rotate(); if(e.key === "ArrowDown") down(); 
-});
+window.addEventListener('keydown', e => { if(e.key === "ArrowLeft") move(-1); if(e.key === "ArrowRight") move(1); if(e.key === "ArrowUp") rotate(); if(e.key === "ArrowDown") down(); });
 
-// --- サイドバーボタンのクリック判定復活 ---
 canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) * (canvas.width / rect.width);
