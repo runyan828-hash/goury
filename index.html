@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>猫のごーりぃテトリス M</title>
     <style>
+        /* いろんな画面サイズに自動で合わせる設定 */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100dvh;
@@ -15,20 +16,22 @@
             display: flex; flex-direction: column;
             align-items: center; justify-content: space-between;
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            padding: 5px 10px calc(10px + env(safe-area-inset-bottom));
+            /* 上下の余白を画面に合わせて調整 */
+            padding: env(safe-area-inset-top) 10px calc(5px + env(safe-area-inset-bottom));
         }
 
-        h1 { font-size: 13px; color: #4A90E2; text-shadow: 1px 1px white; margin: 2px 0; flex-shrink: 0; }
+        h1 { font-size: clamp(12px, 4vw, 15px); color: #4A90E2; text-shadow: 1px 1px white; margin: 5px 0; flex-shrink: 0; }
 
         #main-app {
             display: flex; flex-direction: column; align-items: center;
             width: 100%; max-width: 450px; height: 100%;
+            justify-content: space-between;
         }
 
-        /* ゲーム画面とメッセージを一体化 */
+        /* ゲーム画面とメッセージの一体化エリア（ここが自動で伸び縮みします） */
         #unified-area {
             width: 100%; flex: 1; display: flex; flex-direction: column;
-            background: #fff; border: 4px solid #fff; border-radius: 12px;
+            background: #fff; border: 3px solid #fff; border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; min-height: 0;
         }
 
@@ -43,26 +46,26 @@
         }
 
         #messageBox {
-            width: 100%; height: 50px; display: none; align-items: center;
+            width: 100%; height: clamp(45px, 8vh, 55px); display: none; align-items: center;
             gap: 10px; background: #fff; padding: 0 12px;
             border-top: 2px solid #f1f695; flex-shrink: 0;
         }
-        #msgImage { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
-        #message { font-size: 14px; font-weight: bold; color: #E91E63; line-height: 1.2; flex: 1; }
+        #msgImage { width: clamp(30px, 6vh, 38px); height: clamp(30px, 6vh, 38px); border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
+        #message { font-size: clamp(11px, 3.5vw, 14px); font-weight: bold; color: #E91E63; line-height: 1.2; flex: 1; }
 
-        /* 操作ボタン: 巨大化・押しやすく */
+        /* 操作ボタン: 画面サイズに合わせて高さを調整 */
         #controls {
             width: 100%; display: none; grid-template-columns: repeat(5, 1fr);
-            gap: 8px; padding: 10px 0 5px 0; flex-shrink: 0;
+            gap: clamp(4px, 1.5vw, 8px); padding: 8px 0; flex-shrink: 0;
         }
         .btn-ctrl {
             background: #7dc9fc; color: white; border: none; border-radius: 12px;
-            padding: 22px 0; font-size: 28px; font-weight: bold;
-            box-shadow: 0 6px #5ba8d6; cursor: pointer; user-select: none;
+            padding: clamp(15px, 4vh, 25px) 0; font-size: clamp(20px, 6vw, 30px); font-weight: bold;
+            box-shadow: 0 5px #5ba8d6; cursor: pointer; user-select: none;
         }
-        .btn-ctrl:active { transform: translateY(2px); box-shadow: 0 3px #5ba8d6; }
-        #btn-rotate { background: #ff9e6d; box-shadow: 0 6px #e68a5c; }
-        #btn-pause { background: #95a5a6; box-shadow: 0 6px #7f8c8d; }
+        .btn-ctrl:active { transform: translateY(2px); box-shadow: 0 2px #5ba8d6; }
+        #btn-rotate { background: #ff9e6d; box-shadow: 0 5px #e68a5c; }
+        #btn-pause { background: #95a5a6; box-shadow: 0 5px #7f8c8d; }
 
         #overlay-screen {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0;
@@ -72,17 +75,17 @@
         }
         .container {
             background: white; padding: 20px; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 280px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 85%; max-width: 280px;
         }
         .btn-main {
-            width: 100%; padding: 15px; font-size: 20px; font-weight: bold; margin-top: 10px;
+            width: 100%; padding: 15px; font-size: 18px; font-weight: bold; margin-top: 10px;
             background: #ff6ec7; color: white; border: none; border-radius: 50px; cursor: pointer;
         }
 
         #event-banner {
             position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%);
             background: white; border: 3px solid #ff9e6d; padding: 10px; border-radius: 15px;
-            z-index: 200; display: none; text-align: center; width: 85%;
+            z-index: 200; display: none; text-align: center; width: 80%;
             animation: popIn 0.5s ease-out;
         }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
@@ -98,13 +101,13 @@
                 <div id="overlay-screen">
                     <div class="container" id="screen-content">
                         <h2 style="color:#4A90E2; margin:0 0 10px 0; font-size: 20px;">猫のごーりぃテトリス</h2>
-                        <p style="font-size:12px; color:#666;">合理的配慮で、働きやすい職場を ✨</p>
+                        <p style="font-size:12px; color:#666; line-height: 1.4;">合理的配慮で、働きやすい職場を ✨</p>
                         <button class="btn-main" onclick="startGame(1)">スタート！</button>
                     </div>
                 </div>
                 <canvas id="game" width="450" height="600"></canvas>
                 <div id="event-banner">
-                    <img id="event-icon" src="image/kuma.png" style="width:45px;height:45px;border-radius:50%;border:2px solid #ff9e6d;" />
+                    <img id="event-icon" src="image/kuma.png" style="width:40px;height:40px;border-radius:50%;" />
                     <div style="font-size:14px; color:#E91E63; font-weight:bold; margin-top:5px;">サポート！</div>
                     <div style="font-size:11px; color:#4A90E2;">（あいてる穴を埋めるよ）</div>
                 </div>
@@ -173,6 +176,7 @@ const SHAPES=[
     {shape:[[0,1,1],[1,1,0]], color:"#e0ffff", imgName:"image/tori.png"},
     {shape:[[1,1,0],[0,1,1]], color:"#FFADAD", imgName:"image/panda.png"}
 ];
+
 const images = {};
 SHAPES.forEach(s => { images[s.color] = new Image(); images[s.color].src = s.imgName; });
 const highfiveImg = new Image(); highfiveImg.src = "image/highfive.png";
@@ -186,30 +190,21 @@ const sapotoSound = document.getElementById("sapotoSound");
 
 bgm.volume = 0.12; tapSound.volume = 0.18; lineSound.volume = 0.50; yaySound.volume = 0.60; sapotoSound.volume = 0.50;
 
-// スマホで音を鳴らすための儀式
 function unlockAudio() {
-    const sounds = [bgm, tapSound, lineSound, yaySound, sapotoSound];
-    sounds.forEach(s => {
-        s.play();
-        s.pause();
-        s.currentTime = 0;
-    });
+    [bgm, tapSound, lineSound, yaySound, sapotoSound].forEach(s => { s.play().then(()=>s.pause()).catch(()=>{}); });
 }
 
 function startGame(stage) {
-    unlockAudio(); // 音声の制限解除
-    gameStatus = "playing"; isPaused = false;
-    currentStage = stage; maxStageReached = Math.max(maxStageReached, stage);
+    unlockAudio();
+    gameStatus = "playing"; isPaused = false; currentStage = stage; maxStageReached = Math.max(maxStageReached, stage);
     board = Array.from({length:ROWS},()=>Array(COLS).fill(0));
     score = (stage === 1) ? 0 : 300; lastEventScore = score; lastMessageScore = score;
     baseInterval = (stage === 1) ? 800 : 550;
     document.getElementById("bgBody").style.background = (stage === 1) ? "linear-gradient(135deg, #edaac1, #9ff6f6, #f1f695)" : "linear-gradient(135deg, #a1c4fd, #c2e9fb, #f1f695)";
-    dropInterval = baseInterval;
     document.getElementById("overlay-screen").style.display = "none";
     document.getElementById("messageBox").style.display = "flex";
     document.getElementById("controls").style.display = "grid";
-    bgm.play().catch(e => console.log("BGM play failed:", e));
-    updateStoryUI(); requestAnimationFrame(update);
+    bgm.play().catch(()=>{}); updateStoryUI(); requestAnimationFrame(update);
 }
 
 function updateStoryUI() {
@@ -236,8 +231,7 @@ function triggerEvent() {
     if(gameStatus !== "playing") return;
     setTimeout(() => {
         document.getElementById("event-banner").style.display = "block";
-        fillHoles();
-        sapotoSound.currentTime = 0; sapotoSound.play();
+        fillHoles(); sapotoSound.currentTime = 0; sapotoSound.play();
         createStars(30, 300);
         setTimeout(() => { document.getElementById("event-banner").style.display = "none"; }, 2500);
     }, 400);
@@ -252,23 +246,20 @@ function clearLines() {
         }
     }
     if (lines > 0) {
-        score += lines * 25; 
-        lineSound.currentTime = 0; lineSound.play();
+        score += lines * 25; lineSound.currentTime = 0; lineSound.play();
         if (score >= lastMessageScore + 50) { updateStoryUI(); lastMessageScore = score; }
         if (lines >= 4) { highfiveTimer = 90; yaySound.currentTime = 0; yaySound.play(); }
         const targets = [100, 200, 400, 500];
         targets.forEach(t => { if (score >= t && lastEventScore < t) triggerEvent(); });
         lastEventScore = score;
         if (score >= 300 && currentStage === 1) { 
-            gameStatus = "intermission";
-            yaySound.currentTime = 0; yaySound.play();
+            gameStatus = "intermission"; yaySound.currentTime = 0; yaySound.play();
             const content = document.getElementById("screen-content");
-            content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:13px;">すごい！その調子です！</p><button class="btn-main" onclick="startGame(2)">Stage 2へ挑戦</button>`;
+            content.innerHTML = `<h3 style="color:#E91E63">STAGE 1 クリア! ✨</h3><p style="font-size:13px;">すごい！Stage 2も頑張ろう！</p><button class="btn-main" onclick="startGame(2)">Stage 2へ挑戦</button>`;
             document.getElementById("overlay-screen").style.display = "flex";
         }
         else if (score >= 600) { 
-            gameStatus = "clear";
-            yaySound.currentTime = 0; yaySound.play();
+            gameStatus = "clear"; yaySound.currentTime = 0; yaySound.play();
             const content = document.getElementById("screen-content");
             content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><button class="btn-main" onclick="openMail()">メールで相談する</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
             document.getElementById("overlay-screen").style.display = "flex";
@@ -299,9 +290,7 @@ function openMail() {
 function showGameOverScreen() {
     gameStatus = "gameover";
     const content = document.getElementById("screen-content");
-    let btns = `<button class="btn-main" onclick="startGame(1)">最初から</button>`;
-    if (maxStageReached >= 2) btns += `<button class="btn-main" style="background:#7dc9fc; margin-top:10px;" onclick="startGame(2)">Stage 2から再開</button>`;
-    content.innerHTML = `<h3 style="color:#666">GAME OVER</h3><p>スコア: ${score}</p>${btns}`;
+    content.innerHTML = `<h3 style="color:#666">GAME OVER</h3><p>スコア: ${score}</p><button class="btn-main" onclick="location.reload()">最初から</button>`;
     document.getElementById("overlay-screen").style.display = "flex";
 }
 
@@ -348,7 +337,7 @@ function update(time = 0) {
         requestAnimationFrame(update); return;
     }
     const delta = time - lastTime; lastTime = time; dropCounter += delta;
-    if (dropCounter > dropInterval) {
+    if (dropCounter > 800) {
         piece.y++;
         if (collide(piece)) { 
             piece.y--; piece.shape.forEach((row,y)=>row.forEach((val,x)=>{if(val)board[piece.y+y][piece.x+x]=piece.color;})); 
@@ -357,7 +346,7 @@ function update(time = 0) {
                 const data = nextPieceData;
                 nextPieceData = SHAPES[Math.floor(Math.random()*SHAPES.length)];
                 piece = { shape: data.shape, color: data.color, x: 3, y: 0 };
-                if (collide(piece)) { showGameOverScreen(); }
+                if (collide(piece)) showGameOverScreen();
             }
         }
         dropCounter = 0;
@@ -369,7 +358,7 @@ function update(time = 0) {
     if (highfiveTimer > 0) {
         const progress = (90 - highfiveTimer) / 90; const scale = 0.6 + (1 - Math.pow(1-progress,3)) * 0.4 + Math.sin(progress * Math.PI) * 0.08;
         ctx.save(); ctx.globalAlpha = Math.min(1, 0.2 + (1 - Math.pow(1-progress,3)) * 0.8);
-        ctx.drawImage(highfiveImg, 150 - (250*scale)/2, 300 - (250*scale)/2, 250*scale, 250*scale); ctx.restore(); highfiveTimer--;
+        ctx.drawImage(highfiveImg, 225 - (250*scale)/2, 300 - (250*scale)/2, 250*scale, 250*scale); ctx.restore(); highfiveTimer--;
     }
     requestAnimationFrame(update);
 }
@@ -385,16 +374,21 @@ const addEv = (id, fn) => {
 };
 addEv("btn-left", () => move(-1)); addEv("btn-right", () => move(1)); addEv("btn-rotate", rotate); addEv("btn-down", down); addEv("btn-pause", () => { isPaused = !isPaused; document.getElementById("btn-pause").textContent = isPaused ? "▶" : "⏸"; });
 
-window.addEventListener('keydown', e => { 
-    if(e.key === "ArrowLeft") move(-1); if(e.key === "ArrowRight") move(1); if(e.key === "ArrowUp") rotate(); if(e.key === "ArrowDown") down(); 
-});
-
-canvas.addEventListener('click', (e) => {
+canvas.addEventListener('mousedown', (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) * (canvas.width / rect.width);
     const y = (e.clientY - rect.top) * (canvas.height / rect.height);
     if (x > SIDEBAR_X + 15 && x < SIDEBAR_X + 135 && y > 410 && y < 450) openMail();
 });
+canvas.addEventListener('touchstart', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+    const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+    if (x > SIDEBAR_X + 15 && x < SIDEBAR_X + 135 && y > 410 && y < 450) { e.preventDefault(); openMail(); }
+}, {passive: false});
+
+window.addEventListener('keydown', e => { if(e.key === "ArrowLeft") move(-1); if(e.key === "ArrowRight") move(1); if(e.key === "ArrowUp") rotate(); if(e.key === "ArrowDown") down(); });
 </script>
 </body>
 </html>
