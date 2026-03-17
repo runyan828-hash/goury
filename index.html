@@ -336,7 +336,7 @@ function drawUI() {
     ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("SCORE", SIDEBAR_X + 75, 200); ctx.fillText(score, SIDEBAR_X + 75, 222);
     if (gouriImg.complete) ctx.drawImage(gouriImg, SIDEBAR_X + 15, 270, 120, 120);
     ctx.fillStyle = "#4A90E2"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 410, 120, 40, 10); ctx.fill();
-    ctx.fillStyle = "white"; ctx.font = "bold 18px Arial"; ctx.fillText("相談窓口はこちら", SIDEBAR_X + 75, 435);
+    ctx.fillStyle = "white"; ctx.font = "bold 18px Arial"; ctx.fillText("相談窓口はこちら", SIDEBAR_X  + 15, 270, 120, 120);
 }
 
 function update(time = 0) {
