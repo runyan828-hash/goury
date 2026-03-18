@@ -112,7 +112,7 @@
                 <div id="event-banner">
                     <img id="event-icon" src="image/kuma.png" style="width:40px;height:40px;border-radius:50%;" />
                     <div style="font-size:15px; color:#E91E63; font-weight:bold; margin-top:5px;">サポートするよ！</div>
-                    <div style="font-size:11px; color:#4A90E2;">（あいてる穴を埋めるよ）</div>
+                    <div style="font-size:11px; color:#4A90E2;">（あいてる穴を埋めたよ）</div>
                 </div>
             </div>
 
@@ -266,7 +266,7 @@ function clearLines() {
         else if (score >= 600) { 
             gameStatus = "clear"; yaySound.currentTime = 0; yaySound.play();
             const content = document.getElementById("screen-content");
-            content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><button class="btn-main" onclick="openMail()">メールで相談する</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
+            content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><button class="btn-main" onclick="openMail()">相談してみる</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
             document.getElementById("overlay-screen").style.display = "flex";
         }
     }
@@ -332,11 +332,11 @@ function drawUI() {
             ctx.fillStyle = nextPieceData.color; ctx.beginPath(); ctx.roundRect(sx + x*ns, 60 + y*ns, ns-2, ns-2, 4); ctx.fill();
         }
     }));
-    ctx.fillStyle = "#ff6ec7"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 180, 120, 50, 10); ctx.fill();
-    ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("SCORE", SIDEBAR_X + 75, 200); ctx.fillText(score, SIDEBAR_X + 75, 222);
+     ctx.fillStyle = "#ff6ec7"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 180, 120, 50, 10); ctx.fill();
+    ctx.fillStyle = "white"; ctx.font = "bold 16px Arial"; ctx.fillText("SCORE", SIDEBAR_X + 75, 200); ctx.fillText(score, SIDEBAR_X + 75, 222);
     if (gouriImg.complete) ctx.drawImage(gouriImg, SIDEBAR_X + 15, 270, 120, 120);
-    ctx.fillStyle = "#4A90E2"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 410, 120, 40, 10); ctx.fill();
-    ctx.fillStyle = "white"; ctx.font = "bold 18px Arial"; ctx.fillText("相談窓口はこちら", SIDEBAR_X  + 15, 270, 120, 120);
+    ctx.fillStyle = "#4A90E2"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 410, 120, 60, 10); ctx.fill();
+    ctx.fillStyle = "white"; ctx.font = "bold 20px Arial"; ctx.fillText("相談窓口",SIDEBAR_X + 75, 435);ctx.font = "bold 16px Arial";ctx.fillText("ここからどうぞ", SIDEBAR_X + 75, 455);
 }
 
 function update(time = 0) {
