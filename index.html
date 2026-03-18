@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>猫のごーりぃテトリス </title>
+    <title>合理的配慮推進委員会 </title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100dvh;
             overflow: hidden; touch-action: none;
-            /* 1. 外側の背景を元のグラデーションに復元 */
+            /* 外側の背景：元のグラデーション */
             background: linear-gradient(135deg, #edaac1, #9ff6f6, #f1f695);
         }
         body {
@@ -26,11 +26,11 @@
             width: 100%; max-width: 450px; height: 100%;
         }
 
-        /* 2. 2つ目の枠（ゲームエリア全体）をベビーピンクに変更 */
+        /* 2つ目の枠：ベビーピンク */
         #unified-area {
             width: 100%; flex: 0 1 auto;
             display: flex; flex-direction: column;
-            background: #fce4ec; /* ベビーピンク */
+            background: #fce4ec; 
             border: 4px solid #fff; border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden;
             max-height: 65vh;
@@ -39,13 +39,13 @@
         #game-wrapper {
             position: relative; flex: 1; width: 100%;
             display: flex; justify-content: center; align-items: center;
-            background: transparent; /* 下地のベビーピンクが見えるように */
+            background: transparent;
             min-height: 0;
         }
 
         canvas#game {
             max-width: 100%; max-height: 100%; object-fit: contain; display: block;
-            background: #ffffff; /* ゲーム画面自体は白で見やすく */
+            background: #ffffff;
         }
 
         #messageBox {
@@ -56,11 +56,11 @@
         #msgImage { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #f1f695; flex-shrink: 0; }
         #message { font-size: 14px; font-weight: bold; color: #E91E63; line-height: 1.2; flex: 1; }
 
-        /* 操作ボタン: 位置を上げて押しやすく */
+        /* 操作ボタン */
         #controls {
             width: 100%; display: none; grid-template-columns: repeat(5, 1fr);
             gap: 6px; padding: 15px 0; flex-shrink: 0;
-            margin-bottom: 80px; /* 画面下部から離して上に上げる */
+            margin-bottom: 80px;
         }
         .btn-ctrl {
             background: #7dc9fc; color: white; border: none; border-radius: 10px;
@@ -81,10 +81,15 @@
             background: white; padding: 20px; border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 280px;
         }
+        /* スタート画面の大きなボタン設定 */
         .btn-main {
-            width: 100%; padding: 15px; font-size: 20px; font-weight: bold; margin-top: 10px;
-            background: #ff6ec7; color: white; border: none; border-radius: 50px; cursor: pointer;
+            width: 100%; padding: 12px; font-size: 16px; font-weight: bold; margin-top: 12px;
+            background: #ff6ec7; color: white; border: none; border-radius: 15px; cursor: pointer;
+            box-shadow: 0 4px #e91e63; line-height: 1.4;
         }
+        .btn-main:active { transform: translateY(2px); box-shadow: 0 2px #e91e63; }
+        #btn-go-mail { background: #4A90E2; box-shadow: 0 4px #357ABD; }
+        #btn-go-mail:active { box-shadow: 0 2px #357ABD; }
 
         #event-banner {
             position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%);
@@ -96,16 +101,17 @@
 </head>
 <body id="bgBody">
 
-    <h1>🐱 猫のごーりぃと仲間たちのテトリス</h1>
+    <h1>🐱 猫のごーりぃ＆仲間たちとテトリス</h1>
 
     <div id="main-app">
         <div id="unified-area">
             <div id="game-wrapper">
                 <div id="overlay-screen">
                     <div class="container" id="screen-content">
-                        <h2 style="color:#4A90E2; margin:0 0 10px 0; font-size: 20px;">猫のごーりぃテトリス</h2>
-                        <p style="font-size:12px; color:#666;">合理的配慮で、働きやすい職場を ✨</p>
-                        <button class="btn-main" onclick="startGame(1)">スタート！</button>
+                        <h2 style="color:#4A90E2; margin:0 0 10px 0; font-size: 20px;">合理的配慮推進委員会</h2>
+                        <!-- 2つの大きなボタン -->
+                        <button class="btn-main" id="btn-go-mail" onclick="openMail()">相談する方はこちら<br><span style="font-size:10px;">(メールソフトが開きます)</span></button>
+                        <button class="btn-main" id="btn-start-game" onclick="startGame(1)">合理的配慮ミニゲーム<br><span style="font-size:10px;">スタート！</span></button>
                     </div>
                 </div>
                 <canvas id="game" width="450" height="600"></canvas>
@@ -123,7 +129,7 @@
         </div>
 
         <div id="controls">
-           <button class="btn-ctrl" id="btn-left">⬅</button>
+            <button class="btn-ctrl" id="btn-left">⬅</button>
             <button class="btn-ctrl" id="btn-rotate">🌀</button>
             <button class="btn-ctrl" id="btn-right">➡</button>
             <button class="btn-ctrl" id="btn-down">⬇</button>
@@ -191,7 +197,6 @@ const sapotoSound = document.getElementById("sapotoSound");
 
 bgm.volume = 0.12; tapSound.volume = 0.18; lineSound.volume = 0.50; yaySound.volume = 0.60; sapotoSound.volume = 0.50;
 
-// 音の異音対策
 function unlockAudio() {
     [bgm, tapSound, lineSound, yaySound, sapotoSound].forEach(s => {
         s.muted = true;
@@ -266,7 +271,7 @@ function clearLines() {
         else if (score >= 600) { 
             gameStatus = "clear"; yaySound.currentTime = 0; yaySound.play();
             const content = document.getElementById("screen-content");
-            content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><button class="btn-main" onclick="openMail()">相談してみる</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
+            content.innerHTML = `<h3 style="color:#E91E63">✨ ALL CLEAR!</h3><button class="btn-main" id="btn-go-mail" onclick="openMail()">相談してみる</button><button class="btn-main" onclick="location.reload()" style="background:#7dc9fc; margin-top:10px;">最初から遊ぶ</button>`;
             document.getElementById("overlay-screen").style.display = "flex";
         }
     }
@@ -332,11 +337,11 @@ function drawUI() {
             ctx.fillStyle = nextPieceData.color; ctx.beginPath(); ctx.roundRect(sx + x*ns, 60 + y*ns, ns-2, ns-2, 4); ctx.fill();
         }
     }));
-     ctx.fillStyle = "#ff6ec7"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 180, 120, 50, 10); ctx.fill();
+    ctx.fillStyle = "#ff6ec7"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 180, 120, 50, 10); ctx.fill();
     ctx.fillStyle = "white"; ctx.font = "bold 16px Arial"; ctx.fillText("SCORE", SIDEBAR_X + 75, 200); ctx.fillText(score, SIDEBAR_X + 75, 222);
-    if (gouriImg.complete) ctx.drawImage(gouriImg, SIDEBAR_X + 15, 270, 120, 120);
-    ctx.fillStyle = "#4A90E2"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 410, 120, 60, 10); ctx.fill();
-    ctx.fillStyle = "white"; ctx.font = "bold 20px Arial"; ctx.fillText("相談窓口",SIDEBAR_X + 75, 435);ctx.font = "bold 16px Arial";ctx.fillText("ここからどうぞ", SIDEBAR_X + 75, 455);
+    if (gouriImg.complete) ctx.drawImage(gouriImg, SIDEBAR_X + 10, 270, 140, 120);
+    ctx.fillStyle = "#4A90E2"; ctx.beginPath(); ctx.roundRect(SIDEBAR_X + 15, 410, 120, 100, 10); ctx.fill();
+    ctx.fillStyle = "white"; ctx.font = "bold 20px Arial"; ctx.fillText("相談窓口",SIDEBAR_X + 75, 455);ctx.font = "bold 16px Arial";ctx.fillText("ここからどうぞ", SIDEBAR_X + 75, 485);
 }
 
 function update(time = 0) {
@@ -375,27 +380,44 @@ const move = (dx) => { if(gameStatus==="playing" && !isPaused){ piece.x += dx; i
 const rotate = () => { if(gameStatus==="playing" && !isPaused){ const old=piece.shape; piece.shape=piece.shape[0].map((_,i)=>piece.shape.map(r=>r[i]).reverse()); if(collide(piece))piece.shape=old; tapSound.currentTime=0; tapSound.play(); } };
 const down = () => { if(gameStatus==="playing" && !isPaused){ piece.y++; if(collide(piece))piece.y--; tapSound.currentTime=0; tapSound.play(); } };
 
+const togglePause = () => {
+    if(gameStatus !== "playing") return;
+    isPaused = !isPaused;
+    document.getElementById("btn-pause").textContent = isPaused ? "▶" : "⏸";
+    // 音楽のポーズ制御を追加
+    if (isPaused) {
+        bgm.pause();
+    } else {
+        bgm.play().catch(()=>{});
+    }
+};
+
 const addEv = (id, fn) => {
     const el = document.getElementById(id);
     el.addEventListener('touchstart', (e) => { e.preventDefault(); fn(); }, {passive: false});
     el.addEventListener('mousedown', (e) => { e.preventDefault(); fn(); });
 };
-addEv("btn-left", () => move(-1)); addEv("btn-right", () => move(1)); addEv("btn-rotate", rotate); addEv("btn-down", down); addEv("btn-pause", () => { isPaused = !isPaused; document.getElementById("btn-pause").textContent = isPaused ? "▶" : "⏸"; });
+addEv("btn-left", () => move(-1)); addEv("btn-right", () => move(1)); addEv("btn-rotate", rotate); addEv("btn-down", down); addEv("btn-pause", togglePause);
 
-// PC操作復活
+// PC操作
 window.addEventListener('keydown', e => { 
-    if(gameStatus !== "playing" || isPaused) return;
+    if(gameStatus !== "playing") return;
+    if(isPaused) {
+        if(e.key.toLowerCase() === "p") togglePause();
+        return;
+    }
     if(e.key === "ArrowLeft") move(-1); 
     if(e.key === "ArrowRight") move(1); 
     if(e.key === "ArrowUp") rotate(); 
     if(e.key === "ArrowDown") down(); 
+    if(e.key.toLowerCase() === "p") togglePause();
 });
 
 canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) * (canvas.width / rect.width);
     const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-    if (x > SIDEBAR_X + 15 && x < SIDEBAR_X + 135 && y > 410 && y < 450) openMail();
+    if (x > SIDEBAR_X + 15 && x < SIDEBAR_X + 135 && y > 410 && y < 470) openMail();
 });
 </script>
 </body>
