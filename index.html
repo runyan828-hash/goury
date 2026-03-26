@@ -149,7 +149,11 @@ const ctx = canvas.getContext("2d");
 
 const MAIL_TO = "goritekihairyo@care-tsuchiya.com";
 const MAIL_SUB = "合理的配慮についての相談";
-const MAIL_BODY = "障害がある等で仕事上困っていること、配慮して欲しい内容など先ずはご連絡下さい。1週間以内に合理的配慮推進委員会から返事を差し上げます。\n\nお名前：\n相談内容（簡単にで大丈夫）：";
+const MAIL_BODY = `障害がある等で仕事上困っていること、配慮して欲しい内容など先ずはご連絡下さい。
+1週間以内に合理的配慮推進委員会から返事を差し上げます。
+
+お名前：
+相談内容（簡単にで大丈夫）：`;
 
 const GAME_WIDTH = 300, SIDEBAR_X = 300, ROWS = 20, COLS = 10, BLOCK = 30;
 let board = Array.from({length:ROWS},()=>Array(COLS).fill(0));
